@@ -71,20 +71,26 @@ jobs:
           docker pull ${{ secrets.ECR_PRIVATE_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/${{ secrets.ECR_PRIVATE_REPOSITORY }}:${{ github.sha }}
 
       - name: Run container in background
-        run: |
-          docker run -d --name test-container \
-            -p 8080:8080 \
-            ${{ secrets.ECR_PRIVATE_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/${{ secrets.ECR_PRIVATE_REPOSITORY }}:${{ github.sha }}
-
-      - name: Wait for app to start
-        run: sleep 20  # Spring Boot 초기 구동 대기
-
-      - name: Test app response
-        run: |
-          curl --fail http://localhost:8080/actuator/health
-
-      - name: Stop container
-        run: |
-          docker stop test-container
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script: |
+            cd ~/app
+  
+            echo "ECR_REPO=${{ secrets.ECR_PRIVATE_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/${{ secrets.ECR_PRIVATE_REPOSITORY }}" > .env
+            echo "IMAGE_TAG=${{ github.sha }}" >> .env
+            echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" >> .env
+            echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
+            echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env
+  
+            aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${{ secrets.ECR_PRIVATE_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com
+  
+            docker pull ${{ secrets.ECR_PRIVATE_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/${{ secrets.ECR_PRIVATE_REPOSITORY }}:${{ github.sha }}
+  
+            docker-compose --env-file .env down
+            docker-compose --env-file .env up -d
+            docker image prune -f
 
       
