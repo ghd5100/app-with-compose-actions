@@ -2,7 +2,7 @@
 services:
   backend:
     container_name: backend-server
-    image: ${ECR_REPO}:${IMAGE_TAG}
+    image: "${ECR_REPO}:${IMAGE_TAG}"
     ports:
       - 8080:8080
     environment:
