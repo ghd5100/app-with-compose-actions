@@ -2,7 +2,7 @@
 services:
   backend:
     container_name: backend-server
-    image: hjukeboxox/app-with-actions:latest
+    image: ${DOCKERHUB_USERNAME}/app-with-actions:latest
     ports:
       - 8080:8080
     environment:
