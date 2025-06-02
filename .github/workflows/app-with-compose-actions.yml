@@ -88,6 +88,7 @@ jobs:
           echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" > .env
           echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
           echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env
+          echo "DOCKERHUB_USERNAME=${secrets.DOCKERHUB_USERNAME}" >> .env
           sudo docker-compose down
           sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/app-with-actions:latest
           sudo docker-compose --env-file .env up -d
