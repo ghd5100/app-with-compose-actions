@@ -2,7 +2,7 @@
 services:
   backend:
     container_name: backend-server
-    image: "${ECR_REPO}:${IMAGE_TAG}"
+    image: "116981781177.dkr.ecr.ap-northeast-2.amazonaws.com/first-private-ecr:f140970dfad53331413a1be105153af8e87a0f7f"
     ports:
       - 8080:8080
     environment:
