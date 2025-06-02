@@ -90,5 +90,5 @@ jobs:
           echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env
           sudo docker-compose down
           sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/app-with-actions:latest
-          sudo docker-compose up -d
+          sudo docker-compose --env-file .env up -d
           sudo docker image prune -f
