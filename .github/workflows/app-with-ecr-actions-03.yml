@@ -74,20 +74,30 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script: |
             cd ~/app
-  
-            echo "ECR_REPO=${{ secrets.AWS_ECR_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/${{ secrets.AWS_ECR_REPOSITORY }}" > .env
-            echo "IMAGE_TAG=${{ github.sha }}" >> .env
-            echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" >> .env
-            echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
-            echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env
 
-          
+            echo "🧹 Removing old .env"
+            rm -f .env
+            
+            echo "📝 Creating new .env"
+            cat <<EOF > .env
+            ECR_REPO=${{ secrets.AWS_ECR_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/${{ secrets.AWS_ECR_REPOSITORY }}
+            IMAGE_TAG=${{ github.sha }}
+            SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}
+            SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}
+            SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+            EOF
+
+            echo "🔐 Logging in to ECR"
             aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${{ secrets.AWS_ECR_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com
-  
+
+            echo "📦 Pulling new image"
             docker pull ${{ secrets.AWS_ECR_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/${{ secrets.AWS_ECR_REPOSITORY }}:${{ github.sha }}
-  
+
+            echo "🛠️ Rebuilding container"
             docker-compose --env-file .env down
             docker-compose --env-file .env up -d
+
+            echo "🧼 Cleaning up"
             docker image prune -f
 
       
