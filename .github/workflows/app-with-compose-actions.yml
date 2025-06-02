@@ -21,7 +21,6 @@ jobs:
     - name: Create application.properties
       run: |
         mkdir -p ./src/main/resources
-        cd ./src/main/resources
         echo "${{ secrets.PROPERTIES }}" > ./src/main/resources/application.properties
       shell: bash
 
