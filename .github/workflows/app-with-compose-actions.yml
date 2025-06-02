@@ -62,6 +62,8 @@ jobs:
     needs: ci
     runs-on: ubuntu-latest    
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
     - name: Check docker-compose.yml exists
       run: ls -l docker-compose.yml
     - name: Copy docker-compose.yml to remote server
