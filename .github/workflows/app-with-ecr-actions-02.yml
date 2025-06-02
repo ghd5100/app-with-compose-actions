@@ -55,6 +55,9 @@ jobs:
         run: |
           aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${{ secrets.ECR_PRIVATE_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com
 
+      - name: Create Short SHA
+        run: echo "Short_SHA=${GITGUB_SHA::7} >> $GITHUB_ENV"
+
       - name: Build Docker image
         run: |
           docker build -t ${{ secrets.ECR_PRIVATE_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/${{ secrets.ECR_PRIVATE_REPOSITORY }}:${{ github.sha }} .
