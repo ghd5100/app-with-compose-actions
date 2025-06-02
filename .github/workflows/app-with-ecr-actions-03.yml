@@ -66,10 +66,6 @@ jobs:
         run: |
           docker push ${{ secrets.ECR_PRIVATE_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/${{ secrets.ECR_PRIVATE_REPOSITORY }}:${{ github.sha }}
 
-      - name: Pull Docker image from Amazon ECR
-        run: |
-          docker pull ${{ secrets.ECR_PRIVATE_ID }}.dkr.ecr.ap-northeast-2.amazonaws.com/${{ secrets.AWS_ECR_PRIVATE_REPOSITORY }}:${{ github.sha }}
-
       - name: Run container in background
         uses: appleboy/ssh-action@v1.2.0
         with:
